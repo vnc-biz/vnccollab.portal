@@ -1,0 +1,5 @@
+Marker File.
+
+DO NOT DELETE IT.
+
+This file is used by importSteps to determine if this add-on is being installed.

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<metadata>
+  <version>0001</version>
+  <dependencies>
+      <dependency>profile-vnccollab.common:default</dependency>
+      <dependency>profile-vnccollab.content:default</dependency>
+      <dependency>profile-vnccollab.redmine:default</dependency>
+      <dependency>profile-vnccollab.zimbra:default</dependency>
+      <dependency>profile-vnccollab.theme:default</dependency>
+  </dependencies>
+</metadata>
