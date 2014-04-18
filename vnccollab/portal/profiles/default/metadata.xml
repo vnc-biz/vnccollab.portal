@@ -2,6 +2,12 @@
 <metadata>
   <version>0001</version>
   <dependencies>
+      <dependency>profile-Products.PloneKeywordManager:default</dependency>
+      <dependency>profile-plone.app.workflowmanager:default</dependency>
+      <dependency>profile-collective.imageinbox:default</dependency>
+      <dependency>profile-collective.bulksharing:default</dependency>
+      <dependency>profile-collective.documentviewer:default</dependency>
+      <dependency>profile-collective.externaleditor:default</dependency>
       <dependency>profile-vnccollab.common:default</dependency>
       <dependency>profile-vnccollab.content:default</dependency>
       <dependency>profile-vnccollab.redmine:default</dependency>
