@@ -17,7 +17,8 @@ except ImportError:
     IAsyncService = None
 
 
-def initialSetup(context):
+def initial_setup(context):
+    """Initial set up after add-oninstallation."""
     if context.readDataFile('vnccollab.portal.txt') is None:
         # our add-on isn't being intalled
         return
@@ -25,15 +26,18 @@ def initialSetup(context):
     portal = api.portal.get()
     tinymce_allow_color_style(portal)
     tinymce_allow_flash(portal)
-    configureHomePage(portal)
-    disableSelfRegistration(portal)
-    enableUserFolders(portal)
-    setupDashboard(portal)
-    configureAsyncQuota(portal)
-    configureLanguages(portal)
+    configure_homepage(portal)
+    disable_self_registration(portal)
+    enable_user_folders(portal)
+    setup_dashboard(portal)
+    setup_async_quota(portal)
+    configure_languages(portal)
+    uninstall_kupu()
+    set_external_editor()
 
 
 def tinymce_allow_color_style(context):
+    """Allows style in tinyMCE attributes."""
     html_filter = IFilterSchema(context)
     attrs = html_filter.stripped_attributes
 
@@ -47,6 +51,7 @@ def tinymce_allow_color_style(context):
 
 
 def tinymce_allow_flash(context):
+    """Allows flash content in tinyMCE."""
     html_filter = IFilterSchema(context)
     tags = html_filter.nasty_tags
 
@@ -74,21 +79,25 @@ def tinymce_allow_flash(context):
     html_filter.stripped_tags = tags
 
 
-def configureHomePage(portal):
-    removeProperty(portal, 'default_page')
+def configure_homepage(portal):
+    """Removes default_page property from portal, disabling home page."""
+    remove_property(portal, 'default_page')
 
 
-def disableSelfRegistration(portal):
-    schema = SecurityControlPanelAdapter(portal)
-    schema.enable_self_reg = False
-
-
-def enableUserFolders(portal):
+def enable_user_folders(portal):
+    """Enables User Folders."""
     schema = SecurityControlPanelAdapter(portal)
     schema.enable_user_folders = True
 
 
-def enableSelfRegistration(portal):
+def disable_self_registration(portal):
+    """Disables User self-registration."""
+    schema = SecurityControlPanelAdapter(portal)
+    schema.enable_self_reg = False
+
+
+def enable_self_registration(portal):
+    """Enables User self-registration."""
     app_perms = portal.rolesOfPermission(permission='Add portal member')
     reg_roles = []
     for appperm in app_perms:
@@ -99,17 +108,18 @@ def enableSelfRegistration(portal):
                                  roles=reg_roles + ['Anonymous'], acquire=0)
 
 
-def setupDashboard(portal):
-    # configure dashboard
-    #  * create dashboard folder in private state
-    #  * exclude from navigation
-    #  * add Reader role for Loggin-in users
-    #  * add layout property set to 'dashboard' view
+def setup_dashboard(portal):
+    """Configure dashboard.
+      * create dashboard folder in private state
+      * exclude from navigation
+      * add Reader role for Loggin-in users
+      * add layout property set to 'dashboard' view
+    """
     if 'dashboard' not in portal.objectIds():
         portal.invokeFactory('Folder', 'dashboard', title='Dashboard')
         dashboard = portal.dashboard
         dashboard.update(excludeFromNav=True)
-        setProperty(dashboard, 'layout', 'string', 'dashboard')
+        set_property(dashboard, 'layout', 'string', 'dashboard')
 
         # set local roles
         dashboard.manage_setLocalRoles('AuthenticatedUsers',
@@ -117,8 +127,8 @@ def setupDashboard(portal):
         dashboard.reindexObjectSecurity()
 
 
-def configureAsyncQuota(portal):
-    # set default Quota for async jobs queue
+def setup_async_quota(portal):
+    """Set default Quota for async jobs queue."""
     if IAsyncService is None:
         return
 
@@ -128,7 +138,8 @@ def configureAsyncQuota(portal):
         queue.quotas.create(QUOTA_NAME, size=settings.async_quota_size)
 
 
-def configureLanguages(portal):
+def configure_languages(portal):
+    """Configures languages."""
     langs = getToolByName(portal, 'portal_languages')
 
     # no flags
@@ -139,43 +150,49 @@ def configureLanguages(portal):
                                      setUseCombinedLanguageCodes=False)
 
 
-def cleanRegistry(context, reg_id):
-    if context.readDataFile('vnccollab.portal.txt') is None:
+def clean_registry(portal, reg_id):
+    """Cleans Registry Resource."""
+    if portal.readDataFile('vnccollab.portal.txt') is None:
         return
 
-    portal = context.getSite()
     reg = getToolByName(portal, reg_id)
     reg.clearResources()
 
 
-def cleanCSSRegistry(context):
-    cleanRegistry(context, 'portal_css')
+def clean_css_registry(context):
+    """Cleans CSS registry."""
+    clean_registry(context, 'portal_css')
 
 
-def cleanJSRegistry(context):
-    cleanRegistry(context, 'portal_javascripts')
+def clean_js_registry(context):
+    """Cleans JS registry."""
+    clean_registry(context, 'portal_javascripts')
 
 
-def cleanKSSRegistry(context):
-    cleanRegistry(context, 'portal_kss')
+def clean_kss_registry(context):
+    """Cleans KSS registry."""
+    clean_registry(context, 'portal_kss')
 
 
-def disableVirtualGroupsOnCreation(context):
+def disable_virtual_groups(context):
+    """Disables auto group plugins."""
     activatable = ['IGroupEnumerationPlugin',
                    'IGroupsPlugin',
                    'IPropertiesPlugin']
-    setAutoGroupPlugin(context, activatable)
+    set_autogroup_plugin(context, activatable)
 
 
-def enableVirtualGroupsOnCreation(context):
+def enable_virtual_groups(context):
+    """Enables auto group plugins."""
     activatable = ['IGroupEnumerationPlugin',
                    'IGroupIntrospection',
                    'IGroupsPlugin',
                    'IPropertiesPlugin']
-    setAutoGroupPlugin(context, activatable)
+    set_autogroup_plugin(context, activatable)
 
 
-def setAutoGroupPlugin(context, activatable):
+def set_autogroup_plugin(context, activatable):
+    """Enables auto group plug-in."""
     pas = context.acl_users
     plugin = 'members_auto_group_plugin'
     plugin_obj = pas.get(plugin)
@@ -183,9 +200,26 @@ def setAutoGroupPlugin(context, activatable):
         plugin_obj.manage_activateInterfaces(activatable)
 
 
+def uninstall_kupu():
+    """Uninstall kupu, if present"""
+    try:
+        uninstall_product('kupu')
+    except AttributeError:
+        # We started with a plone version without kupu
+        pass
+
+def set_external_editor():
+    """Enables External Editor for all users."""
+    mtool = api.portal.get_tool('portal_membership')
+    for user in mtool.listMembers():
+        try:
+            user.setMemberProperties({'ext_editor': True})
+        except:
+            pass
+
 # support
 
-def removeProperty(obj, pname):
+def remove_property(obj, pname):
     """Removes given property (IPropertyManager interface) by name from
     object.
 
@@ -201,7 +235,7 @@ def removeProperty(obj, pname):
     return True
 
 
-def setProperty(obj, pname, ptype, value):
+def set_property(obj, pname, ptype, value):
     """Adds or updates given property of a given type to given object using
     IPropertyManager interface.
 
@@ -218,3 +252,10 @@ def setProperty(obj, pname, ptype, value):
         obj.manage_addProperty(pname, value, ptype)
 
     return True
+
+
+def uninstall_product(name):
+    """Uninstall the given product."""
+    installer = api.portal.get_tool('portal_quickinstaller')
+    installer.uninstallProducts([name])
+
