@@ -5,8 +5,6 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="vnccollab.portal">
 
-  <five:registerPackage package="." initialize=".initialize" />
-
   <includeDependencies package="." />
   <include package=".upgrades" />
 
@@ -23,7 +21,7 @@
       name="vnccollab.portal"
       title="Converts a vanilla plone site in a VCP"
       description=""
-      handler="vnccollab.portal.setuphandlers.initialSetup"
+      handler="vnccollab.portal.setuphandlers.initial_setup"
       />
 
 </configure>

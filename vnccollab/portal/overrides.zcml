@@ -1,0 +1,12 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="vnccollab.portal">
+
+
+     <include package="vnccollab.redmine" file="overrides.zcml"/>
+     <include package="vnccollab.zimbra" file="overrides.zcml"/>
+     <include package="vnccollab.theme" file="overrides.zcml"/>
+</configure>
