@@ -43,7 +43,3 @@ class TestInstalled(unittest.TestCase):
         """Verifiies that user folders are enabled."""
         schema = SecurityControlPanelAdapter(self.portal)
         self.assertTrue(schema.enable_user_folders)
-
-    def test_dashboard_exists(self):
-        """Verifies that dashboard was created."""
-        self.assertTrue('dashboard' in self.portal)
