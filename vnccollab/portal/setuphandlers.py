@@ -29,7 +29,6 @@ def initial_setup(context):
     configure_homepage(portal)
     disable_self_registration(portal)
     enable_user_folders(portal)
-    setup_dashboard(portal)
     setup_async_quota(portal)
     configure_languages(portal)
     uninstall_kupu()
@@ -106,25 +105,6 @@ def enable_self_registration(portal):
     if 'Anonymous' not in reg_roles:
         portal.manage_permission('Add portal member',
                                  roles=reg_roles + ['Anonymous'], acquire=0)
-
-
-def setup_dashboard(portal):
-    """Configure dashboard.
-      * create dashboard folder in private state
-      * exclude from navigation
-      * add Reader role for Loggin-in users
-      * add layout property set to 'dashboard' view
-    """
-    if 'dashboard' not in portal.objectIds():
-        portal.invokeFactory('Folder', 'dashboard', title='Dashboard')
-        dashboard = portal.dashboard
-        dashboard.update(excludeFromNav=True)
-        set_property(dashboard, 'layout', 'string', 'dashboard')
-
-        # set local roles
-        dashboard.manage_setLocalRoles('AuthenticatedUsers',
-                                       ['Reader'])
-        dashboard.reindexObjectSecurity()
 
 
 def setup_async_quota(portal):
