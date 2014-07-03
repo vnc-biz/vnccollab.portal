@@ -9,7 +9,7 @@ from plone.testing import z2
 from zope.configuration import xmlconfig
 
 
-class VnccollabportalLayer(PloneSandboxLayer):
+class VnccollabPortalLayer(PloneSandboxLayer):
 
     defaultBases = (PLONE_FIXTURE,)
 
@@ -32,12 +32,13 @@ class VnccollabportalLayer(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'vnccollab.portal:default')
 
-VNCCOLLAB_PORTAL_FIXTURE = VnccollabportalLayer()
+VNCCOLLAB_PORTAL_FIXTURE = VnccollabPortalLayer()
+
 VNCCOLLAB_PORTAL_INTEGRATION_TESTING = IntegrationTesting(
     bases=(VNCCOLLAB_PORTAL_FIXTURE,),
-    name="VnccollabportalLayer:Integration"
+    name="VnccollabPortalLayer:Integration"
 )
 VNCCOLLAB_PORTAL_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(VNCCOLLAB_PORTAL_FIXTURE, z2.ZSERVER_FIXTURE),
-    name="VnccollabportalLayer:Functional"
+    name="VnccollabPortalLayer:Functional"
 )
